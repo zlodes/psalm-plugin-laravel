@@ -2,14 +2,12 @@
 
 namespace Psalm\LaravelPlugin\ReturnTypeProvider;
 
-use PhpParser\Node\Expr\MethodCall;
 use Psalm\CodeLocation;
 use Psalm\Context;
 use Psalm\LaravelPlugin\ApplicationHelper;
 use Psalm\Plugin\Hook\FunctionReturnTypeProviderInterface;
 use Psalm\StatementsSource;
 use Psalm\Type\Atomic\TLiteralString;
-use Psalm\Type\Atomic\TNamedObject;
 use Psalm\Type\Union;
 
 final class PathHelpersReturnTypeProvider implements FunctionReturnTypeProviderInterface
@@ -20,7 +18,6 @@ final class PathHelpersReturnTypeProvider implements FunctionReturnTypeProviderI
 
     public static function getFunctionIds(): array
     {
-        return ['base_path'];
         return array_keys(self::MAP);
     }
 
@@ -41,6 +38,7 @@ final class PathHelpersReturnTypeProvider implements FunctionReturnTypeProviderI
                 $argument = $argumentType->value;
             }
         }
+
         $path = ApplicationHelper::getApp()->{$appMethod}($argument);
 
         if (!$path) {

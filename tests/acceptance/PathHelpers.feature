@@ -29,3 +29,12 @@ Feature: path helpers
       When I run Psalm
       Then I see these errors
         | MissingFile | Cannot find file |
+
+    Scenario: basePath can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->basePath('routes/console.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | MissingFile | Cannot find file |
