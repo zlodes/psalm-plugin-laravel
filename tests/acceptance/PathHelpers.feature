@@ -19,13 +19,13 @@ Feature: path helpers
       """
       <?php declare(strict_types=1);
 
-      namespace Tests\Psalm\LaravelPlugin\Sandbox;
       """
 
     Scenario: base path can be resolved
       Given I have the following code
       """
-      require base_path('routes/console.php');
+      require_once base_path('routes/console.php');
       """
       When I run Psalm
-      Then I see no errors
+      Then I see these errors
+        | MissingFile | Cannot find file |

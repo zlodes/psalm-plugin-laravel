@@ -2,13 +2,13 @@
 
 namespace Psalm\LaravelPlugin\ReturnTypeProvider;
 
-use Illuminate\Database\Eloquent\Builder;
 use PhpParser\Node\Expr\MethodCall;
 use Psalm\CodeLocation;
 use Psalm\Context;
 use Psalm\LaravelPlugin\ApplicationHelper;
 use Psalm\Plugin\Hook\FunctionReturnTypeProviderInterface;
 use Psalm\StatementsSource;
+use Psalm\Type\Atomic\TLiteralString;
 use Psalm\Type\Atomic\TNamedObject;
 use Psalm\Type\Union;
 
@@ -26,67 +26,29 @@ final class PathHelpersReturnTypeProvider implements FunctionReturnTypeProviderI
 
     public static function getFunctionReturnType(StatementsSource $statements_source, string $function_id, array $call_args, Context $context, CodeLocation $code_location)
     {
-        dd('big gulps eh?');
         if (!array_key_exists($function_id, self::MAP)) {
             return null;
         }
 
         $appMethod = self::MAP[$function_id];
 
-        $fake_method_call = new MethodCall(
-            new \PhpParser\Node\Expr\Variable('app'),
-            $appMethod,
-            $call_args
-        );
+        // we're going to do some dynamic analysis here. Let's just resolve the actual path from the app instance
+        $argument = '';
 
-        // proxy to app method to get the actual path
-        $returnType = self::executeFakeCall($statements_source, $fake_method_call, $context);
+        if (isset($call_args[0])) {
+            $argumentType = $call_args[0]->value;
+            if (isset($argumentType->value)) {
+                $argument = $argumentType->value;
+            }
+        }
+        $path = ApplicationHelper::getApp()->{$appMethod}($argument);
 
-        if (!$returnType) {
+        if (!$path) {
             return null;
         }
 
-        return $returnType;
-    }
-
-    private static function executeFakeCall(
-        \Psalm\Internal\Analyzer\StatementsAnalyzer $statements_analyzer,
-        \PhpParser\Node\Expr\MethodCall $fake_method_call,
-        Context $context
-    ) : ?Union {
-        $old_data_provider = $statements_analyzer->node_data;
-        $statements_analyzer->node_data = clone $statements_analyzer->node_data;
-
-        $context = clone $context;
-        $context->inside_call = true;
-
-        $context->vars_in_scope['$app'] = new Union([
-            new TNamedObject(get_class(ApplicationHelper::getApp()))
+        return new Union([
+            new TLiteralString($path),
         ]);
-
-        $suppressed_issues = $statements_analyzer->getSuppressedIssues();
-
-        if (!in_array('PossiblyInvalidMethodCall', $suppressed_issues, true)) {
-            $statements_analyzer->addSuppressedIssues(['PossiblyInvalidMethodCall']);
-        }
-
-        if (\Psalm\Internal\Analyzer\Statements\Expression\Call\MethodCallAnalyzer::analyze(
-                $statements_analyzer,
-                $fake_method_call,
-                $context,
-                false
-            ) === false) {
-            return null;
-        }
-
-        if (!in_array('PossiblyInvalidMethodCall', $suppressed_issues, true)) {
-            $statements_analyzer->removeSuppressedIssues(['PossiblyInvalidMethodCall']);
-        }
-
-        $returnType = $statements_analyzer->node_data->getType($fake_method_call);
-
-        $statements_analyzer->node_data = $old_data_provider;
-
-        return $returnType;
     }
 }
