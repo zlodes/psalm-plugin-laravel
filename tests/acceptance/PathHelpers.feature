@@ -40,3 +40,123 @@ Feature: path helpers
       Then I see these errors
         | Type                  | Message |
         | MissingFile | Cannot find file |
+
+    Scenario: app path can be resolved
+      Given I have the following code
+      """
+      require_once app_path('model.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: path can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->path('model.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: config path can be resolved
+      Given I have the following code
+      """
+      require_once config_path('file.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: path can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->configPath('file.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: database path can be resolved
+      Given I have the following code
+      """
+      require_once database_path('migration.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: databasePath can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->databasePath('migration.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: public path can be resolved
+      Given I have the following code
+      """
+      require_once public_path('file.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: public path can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->make('path.public');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: resource path can be resolved
+      Given I have the following code
+      """
+      require_once resource_path('file.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: resource path can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->resourcePath('file.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: storage path can be resolved
+      Given I have the following code
+      """
+      require_once storage_path('file.php');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |
+
+    Scenario: storage path can be resolved from application instance
+      Given I have the following code
+      """
+      require_once app()->make('path.storage');
+      """
+      When I run Psalm
+      Then I see these errors
+        | Type                  | Message |
+        | MissingFile | Cannot find file |

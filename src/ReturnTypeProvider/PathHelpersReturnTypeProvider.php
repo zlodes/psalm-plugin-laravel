@@ -14,7 +14,13 @@ use Psalm\Type\Union;
 final class PathHelpersReturnTypeProvider implements FunctionReturnTypeProviderInterface, MethodReturnTypeProviderInterface
 {
     private const GLOBAL_FUNCTION_TO_APP_INSTANCE_METHOD_MAP = [
+        'app_path' => 'path',
         'base_path' => 'basepath',
+        'config_path' => 'configpath',
+        'database_path' => 'databasepath',
+        'public_path' => 'todo', // todo!
+        'resource_path' => 'resourcepath',
+        'storage_path' => 'todo', // todo!
     ];
 
     public static function getFunctionIds(): array
