@@ -28,6 +28,7 @@ Feature: path helpers
       """
       When I run Psalm
       Then I see these errors
+        | Type                  | Message |
         | MissingFile | Cannot find file |
 
     Scenario: basePath can be resolved from application instance
@@ -37,4 +38,5 @@ Feature: path helpers
       """
       When I run Psalm
       Then I see these errors
+        | Type                  | Message |
         | MissingFile | Cannot find file |
